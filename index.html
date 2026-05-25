@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<div id="domeSolanaApp">
+  <style>
+    #domeSolanaApp {
+      font-family: Arial, sans-serif;
+      background: #070711;
+      color: #f5f5ff;
+      padding: 20px;
+      border-radius: 18px;
+    }
+
+    #domeSolanaApp .wrap {
+      max-width: 980px;
+      margin: auto;
+      background: #111122;
+      border: 1px solid #2d2d55;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 0 35px rgba(128, 90, 213, 0.22);
+    }
+
+    #domeSolanaApp h1,
+    #domeSolanaApp h2,
+    #domeSolanaApp h3 {
+      color: #d9c7ff;
+    }
+
+    #domeSolanaApp h1 {
+      margin-top: 0;
+    }
+
+    #domeSolanaApp button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 6px 6px 6px 0;
+      background: #7c3aed;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #domeSolanaApp button:hover {
+      background: #8b5cf6;
+    }
+
+    #domeSolanaApp button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #domeSolanaApp .card {
+      background: #18182d;
+      border: 1px solid #31315c;
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    #domeSolanaApp .warning {
+      background: #2a1308;
+      border: 1px solid #ff9f43;
+      color: #ffd8a8;
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    #domeSolanaApp .label {
+      color: #b8a9ff;
+      font-weight: bold;
+    }
+
+    #domeSolanaApp code {
+      word-break: break-all;
+      color: #a7f3d0;
+    }
+
+    #domeSolanaApp pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #050510;
+      border: 1px solid #29294d;
+      padding: 14px;
+      border-radius: 12px;
+      min-height: 170px;
+      max-height: 440px;
+      overflow: auto;
+    }
+
+    #domeSolanaApp input,
+    #domeSolanaApp textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      padding: 11px;
+      border-radius: 10px;
+      border: 1px solid #33335f;
+      background: #090918;
+      color: #fff;
+    }
+
+    #domeSolanaApp textarea {
+      min-height: 190px;
+      font-family: monospace;
+    }
+
+    #domeSolanaApp a {
+      color: #93c5fd;
+    }
+
+    #domeSolanaApp .small {
+      color: #c4b5fd;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    #domeSolanaApp .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 760px) {
+      #domeSolanaApp .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <div class="wrap">
+    <h1>DOME Solana Mainnet Mint With Metadata</h1>
+
+    <div class="warning">
+      MAINNET MODE: This spends real SOL and creates a real SPL token mint with Metaplex metadata on Solana mainnet-beta.
+      Use a wallet you control. Mobile users should open this Blogger page inside Phantom browser.
+    </div>
+
+    <div class="card">
+      <h2>1. Free Metadata Helper</h2>
+
+      <p class="small">
+        Create a free public GitHub repo, upload <code>dome.json</code> and <code>dome.png</code>,
+        then enable GitHub Pages. This helper builds the correct public metadata URL.
+      </p>
+
+      <div class="grid">
+        <div>
+          <label class="label">GitHub Username</label>
+          <input id="githubUsername" value="kingbrown8748" />
+        </div>
+
+        <div>
+          <label class="label">GitHub Repo Name</label>
+          <input id="githubRepo" value="dome-token-metadata" />
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label class="label">JSON Filename</label>
+          <input id="jsonFilename" value="dome.json" />
+        </div>
+
+        <div>
+          <label class="label">Image Filename</label>
+          <input id="imageFilename" value="dome.png" />
+        </div>
+      </div>
+
+      <label class="label">Blog / Website URL</label>
+      <input id="websiteUrl" value="https://your-blog.blogspot.com" />
+
+      <label class="label">Token Description</label>
+      <input id="tokenDescription" value="DOME Solana mainnet token minted from the console manifest." />
+
+      <button id="buildMetadataBtn">Build Metadata URI + JSON</button>
+      <button id="copyMetadataBtn">Copy dome.json</button>
+
+      <div>
+        <span class="label">Generated Metadata URI:</span>
+        <code id="generatedMetadataUri">None yet</code>
+      </div>
+
+      <div>
+        <span class="label">Generated Image URL:</span>
+        <code id="generatedImageUrl">None yet</code>
+      </div>
+
+      <h3>dome.json Preview</h3>
+      <textarea id="metadataJsonOutput" readonly></textarea>
+
+      <p class="small">
+        Upload this JSON content to GitHub as <code>dome.json</code>. Upload your logo image as <code>dome.png</code>.
+        Your final metadata URI should look like:
+        <code>https://USERNAME.github.io/REPO/dome.json</code>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>2. Wallet Status</h2>
+      <div><span class="label">Wallet:</span> <code id="walletAddress">Not connected</code></div>
+      <div><span class="label">Network:</span> <code id="networkLabel">mainnet-beta</code></div>
+      <div><span class="label">SOL Balance:</span> <code id="solBalance">0</code></div>
+    </div>
+
+    <div class="card">
+      <h2>3. Mint Settings</h2>
+
+      <label class="label">Token Name</label>
+      <input id="tokenName" value="DOME Manifest Token" maxlength="32" />
+
+      <label class="label">Token Symbol</label>
+      <input id="tokenSymbol" value="DOME" maxlength="10" />
+
+      <label class="label">Metadata URI</label>
+      <input id="metadataUri" value="https://kingbrown8748.github.io/dome-token-metadata/dome.json" maxlength="200" />
+
+      <label class="label">Mint Amount</label>
+      <input id="mintAmount" value="9999999" />
+
+      <label class="label">Decimals</label>
+      <input id="tokenDecimals" value="9" />
+
+      <button id="connectBtn">Connect Phantom Mainnet</button>
+      <button id="mintBtn" disabled>Create Mint + Metadata + Mint DOME</button>
+      <button id="clearBtn">Clear Log</button>
+    </div>
+
+    <div class="card">
+      <h2>4. Results</h2>
+      <div><span class="label">Mint Address:</span> <code id="mintAddress">None yet</code></div>
+      <div><span class="label">Metadata PDA:</span> <code id="metadataAddress">None yet</code></div>
+      <div><span class="label">Token Account:</span> <code id="tokenAccount">None yet</code></div>
+      <div><span class="label">Create Mint/Metadata Signature:</span> <code id="metadataSignature">None yet</code></div>
+      <div><span class="label">MintTo Signature:</span> <code id="lastSignature">None yet</code></div>
+    </div>
+
+    <div class="card">
+      <h2>Console Manifest Log</h2>
+      <pre id="logArea"></pre>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import {
+    Connection,
+    PublicKey,
+    Keypair,
+    SystemProgram,
+    Transaction,
+    clusterApiUrl,
+    LAMPORTS_PER_SOL
+  } from "https://esm.sh/@solana/web3.js@1.95.8";
+
+  import {
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    MINT_SIZE,
+    getMinimumBalanceForRentExemptMint,
+    getAssociatedTokenAddress,
+    createInitializeMintInstruction,
+    createAssociatedTokenAccountIdempotentInstruction,
+    createMintToInstruction
+  } from "https://esm.sh/@solana/spl-token@0.4.9";
+
+  import {
+    createCreateMetadataAccountV3Instruction
+  } from "https://esm.sh/@metaplex-foundation/mpl-token-metadata@3.2.1";
+
+  const e = ["euGene", 5, 6, "HEI", "EG🎑"];
+  const u = ["VAV", "WAW", 6, e];
+  const G = ["AC🎑", "BE🎑", "CE🎑", "YAHWEH", "Gimel", 3];
+  const n = ["nun", 50, "🚧"];
+
+  const Name = ["HUoF6e5JmRmp22fDLstLEWEHNaPEAekK2mGaJVMyL78w"];
+  const Account = ["8nvuWbvxrabbkEThNoiDMM44nVfP1JuEuVNNCwqQpVTd"];
+
+  const MAINNET_CLUSTER = "mainnet-beta";
+
+  const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+  );
+
+  let provider = null;
+  let walletPublicKey = null;
+
+  const connection = new Connection(
+    clusterApiUrl(MAINNET_CLUSTER),
+    "confirmed"
+  );
+
+  let walletAddressEl;
+  let networkLabelEl;
+  let solBalanceEl;
+  let mintAddressEl;
+  let metadataAddressEl;
+  let tokenAccountEl;
+  let metadataSignatureEl;
+  let lastSignatureEl;
+  let logArea;
+
+  let tokenNameInput;
+  let tokenSymbolInput;
+  let metadataUriInput;
+  let mintAmountInput;
+  let tokenDecimalsInput;
+
+  let connectBtn;
+  let mintBtn;
+  let clearBtn;
+
+  let githubUsernameInput;
+  let githubRepoInput;
+  let jsonFilenameInput;
+  let imageFilenameInput;
+  let websiteUrlInput;
+  let tokenDescriptionInput;
+  let buildMetadataBtn;
+  let copyMetadataBtn;
+  let generatedMetadataUriEl;
+  let generatedImageUrlEl;
+  let metadataJsonOutput;
+
+  function initDomRefs() {
+    walletAddressEl = document.getElementById("walletAddress");
+    networkLabelEl = document.getElementById("networkLabel");
+    solBalanceEl = document.getElementById("solBalance");
+    mintAddressEl = document.getElementById("mintAddress");
+    metadataAddressEl = document.getElementById("metadataAddress");
+    tokenAccountEl = document.getElementById("tokenAccount");
+    metadataSignatureEl = document.getElementById("metadataSignature");
+    lastSignatureEl = document.getElementById("lastSignature");
+    logArea = document.getElementById("logArea");
+
+    tokenNameInput = document.getElementById("tokenName");
+    tokenSymbolInput = document.getElementById("tokenSymbol");
+    metadataUriInput = document.getElementById("metadataUri");
+    mintAmountInput = document.getElementById("mintAmount");
+    tokenDecimalsInput = document.getElementById("tokenDecimals");
+
+    connectBtn = document.getElementById("connectBtn");
+    mintBtn = document.getElementById("mintBtn");
+    clearBtn = document.getElementById("clearBtn");
+
+    githubUsernameInput = document.getElementById("githubUsername");
+    githubRepoInput = document.getElementById("githubRepo");
+    jsonFilenameInput = document.getElementById("jsonFilename");
+    imageFilenameInput = document.getElementById("imageFilename");
+    websiteUrlInput = document.getElementById("websiteUrl");
+    tokenDescriptionInput = document.getElementById("tokenDescription");
+    buildMetadataBtn = document.getElementById("buildMetadataBtn");
+    copyMetadataBtn = document.getElementById("copyMetadataBtn");
+    generatedMetadataUriEl = document.getElementById("generatedMetadataUri");
+    generatedImageUrlEl = document.getElementById("generatedImageUrl");
+    metadataJsonOutput = document.getElementById("metadataJsonOutput");
+
+    networkLabelEl.textContent = MAINNET_CLUSTER;
+  }
+
+  function log(...items) {
+    const line = items
+      .map((item) => {
+        if (typeof item === "bigint") return item.toString();
+
+        if (item instanceof PublicKey) {
+          return item.toBase58();
+        }
+
+        if (typeof item === "object") {
+          try {
+            return JSON.stringify(item, null, 2);
+          } catch {
+            return String(item);
+          }
+        }
+
+        return String(item);
+      })
+      .join(" ");
+
+    console.log(...items);
+
+    if (logArea) {
+      logArea.textContent += line + "\n";
+      logArea.scrollTop = logArea.scrollHeight;
+    }
+  }
+
+  function safeFileName(value, fallback) {
+    const cleaned = String(value || "")
+      .trim()
+      .replace(/^\/+/, "")
+      .replace(/\s+/g, "-");
+
+    return cleaned || fallback;
+  }
+
+  function buildMetadataHelper() {
+    const username = githubUsernameInput.value.trim();
+    const repo = githubRepoInput.value.trim();
+    const jsonFile = safeFileName(jsonFilenameInput.value, "dome.json");
+    const imageFile = safeFileName(imageFilenameInput.value, "dome.png");
+
+    const tokenName = tokenNameInput.value.trim() || "DOME Manifest Token";
+    const tokenSymbol = tokenSymbolInput.value.trim() || "DOME";
+    const description =
+      tokenDescriptionInput.value.trim() ||
+      "DOME Solana mainnet token minted from the console manifest.";
+    const website = websiteUrlInput.value.trim();
+
+    if (!username || !repo) {
+      log("GitHub username and repo name are required to build metadata URLs.");
+      return;
+    }
+
+    const baseUrl = `https://${username}.github.io/${repo}`;
+    const metadataUrl = `${baseUrl}/${jsonFile}`;
+    const imageUrl = `${baseUrl}/${imageFile}`;
+
+    const metadataJson = {
+      name: tokenName,
+      symbol: tokenSymbol,
+      description,
+      image: imageUrl,
+      extensions: {
+        website
+      }
+    };
+
+    generatedMetadataUriEl.textContent = metadataUrl;
+    generatedImageUrlEl.textContent = imageUrl;
+    metadataUriInput.value = metadataUrl;
+    metadataJsonOutput.value = JSON.stringify(metadataJson, null, 2);
+
+    log("Generated metadata URI:", metadataUrl);
+    log("Generated image URL:", imageUrl);
+    log("Upload the JSON preview as", jsonFile, "and the image as", imageFile, "to your GitHub Pages repo.");
+  }
+
+  async function copyMetadataJson() {
+    const text = metadataJsonOutput.value.trim();
+
+    if (!text) {
+      log("Nothing to copy. Click Build Metadata URI + JSON first.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      log("Copied dome.json content to clipboard.");
+    } catch {
+      metadataJsonOutput.select();
+      document.execCommand("copy");
+      log("Copied dome.json content using fallback copy.");
+    }
+  }
+
+  function getExplorerUrl(signatureOrAddress, type = "tx") {
+    return `https://explorer.solana.com/${type}/${signatureOrAddress}`;
+  }
+
+  function getPhantomProvider() {
+    const detectedProvider =
+      window.phantom?.solana?.isPhantom
+        ? window.phantom.solana
+        : window.solana?.isPhantom
+          ? window.solana
+          : null;
+
+    return detectedProvider;
+  }
+
+  async function waitForPhantomProvider(timeoutMs = 3500) {
+    const startedAt = Date.now();
+
+    while (Date.now() - startedAt < timeoutMs) {
+      const detectedProvider = getPhantomProvider();
+
+      if (detectedProvider) {
+        return detectedProvider;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    return null;
+  }
+
+  function deriveMetadataPda(mintPublicKey) {
+    const [metadataPda] = PublicKey.findProgramAddressSync(
+      [
+        new TextEncoder().encode("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mintPublicKey.toBuffer()
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    );
+
+    return metadataPda;
+  }
+
+  async function refreshBalance() {
+    if (!walletPublicKey) return;
+
+    const lamports = await connection.getBalance(walletPublicKey);
+    const sol = lamports / LAMPORTS_PER_SOL;
+
+    solBalanceEl.textContent = sol.toString();
+
+    if (lamports <= 0) {
+      log("Warning: this wallet has no SOL. Mainnet minting requires real SOL.");
+    }
+  }
+
+  async function connectPhantom() {
+    provider = await waitForPhantomProvider();
+
+    if (!provider) {
+      log("Phantom wallet not detected.");
+      log("Desktop: install Phantom extension and open the published Blogspot page.");
+      log("Android/iPhone: open this Blogger page inside the Phantom app browser.");
+      window.open("https://phantom.app/", "_blank");
+      return;
+    }
+
+    try {
+      const response = await provider.connect({
+        onlyIfTrusted: false
+      });
+
+      walletPublicKey = new PublicKey(response.publicKey.toString());
+
+      walletAddressEl.textContent = walletPublicKey.toBase58();
+      mintBtn.disabled = false;
+
+      provider.on?.("disconnect", () => {
+        walletPublicKey = null;
+        walletAddressEl.textContent = "Disconnected";
+        mintBtn.disabled = true;
+        log("Phantom disconnected.");
+      });
+
+      provider.on?.("accountChanged", async (publicKey) => {
+        if (publicKey) {
+          walletPublicKey = new PublicKey(publicKey.toString());
+          walletAddressEl.textContent = walletPublicKey.toBase58();
+          mintBtn.disabled = false;
+          log("Phantom account changed:", walletPublicKey.toBase58());
+          await refreshBalance();
+        } else {
+          walletPublicKey = null;
+          walletAddressEl.textContent = "Not connected";
+          mintBtn.disabled = true;
+          log("Phantom account locked or disconnected.");
+        }
+      });
+
+      log("Connected Phantom mainnet wallet:", walletPublicKey.toBase58());
+      await refreshBalance();
+    } catch (error) {
+      if (error?.code === 4001) {
+        log("Connection rejected by user.");
+        return;
+      }
+
+      log("Connect error:", error.message || error);
+    }
+  }
+
+  function parseMintAmountToBaseUnits(amountText, decimals) {
+    const cleaned = String(amountText).trim();
+
+    if (!/^\d+(\.\d+)?$/.test(cleaned)) {
+      throw new Error("Mint amount must be a positive number.");
+    }
+
+    const [wholeRaw, fractionalRaw = ""] = cleaned.split(".");
+    const whole = BigInt(wholeRaw || "0");
+
+    const fractionalPadded = fractionalRaw
+      .slice(0, decimals)
+      .padEnd(decimals, "0");
+
+    const fractional = BigInt(fractionalPadded || "0");
+    const base = 10n ** BigInt(decimals);
+
+    return whole * base + fractional;
+  }
+
+  function validateMetadataFields(name, symbol, uri) {
+    if (!name || name.length > 32) {
+      throw new Error("Token name is required and must be 32 characters or fewer.");
+    }
+
+    if (!symbol || symbol.length > 10) {
+      throw new Error("Token symbol is required and must be 10 characters or fewer.");
+    }
+
+    if (!uri || uri.length > 200) {
+      throw new Error("Metadata URI is required and must be 200 characters or fewer.");
+    }
+
+    if (!/^https?:\/\//i.test(uri) && !/^ipfs:\/\//i.test(uri) && !/^ar:\/\//i.test(uri)) {
+      throw new Error("Metadata URI should be an https://, ipfs://, or ar:// URL.");
+    }
+  }
+
+  async function signAndSendTransaction(transaction, extraSigners = []) {
+    if (!provider || !walletPublicKey) {
+      throw new Error("Connect Phantom first.");
+    }
+
+    transaction.feePayer = walletPublicKey;
+
+    const latestBlockhash = await connection.getLatestBlockhash("confirmed");
+    transaction.recentBlockhash = latestBlockhash.blockhash;
+
+    if (extraSigners.length > 0) {
+      transaction.partialSign(...extraSigners);
+    }
+
+    const signed = await provider.signTransaction(transaction);
+
+    const signature = await connection.sendRawTransaction(signed.serialize(), {
+      skipPreflight: false,
+      preflightCommitment: "confirmed"
+    });
+
+    await connection.confirmTransaction(
+      {
+        signature,
+        blockhash: latestBlockhash.blockhash,
+        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight
+      },
+      "confirmed"
+    );
+
+    return signature;
+  }
+
+  async function createMintMetadataAndMintDome() {
+    if (!walletPublicKey || !provider) {
+      throw new Error("Connect Phantom first.");
+    }
+
+    const tokenName = tokenNameInput.value.trim();
+    const symbol = tokenSymbolInput.value.trim();
+    const metadataUri = metadataUriInput.value.trim();
+    const decimals = Number(tokenDecimalsInput.value.trim());
+    const mintAmountText = mintAmountInput.value.trim();
+
+    validateMetadataFields(tokenName, symbol, metadataUri);
+
+    if (!Number.isInteger(decimals) || decimals < 0 || decimals > 9) {
+      throw new Error("Decimals must be an integer from 0 to 9.");
+    }
+
+    const mintAmountBaseUnits = parseMintAmountToBaseUnits(
+      mintAmountText,
+      decimals
+    );
+
+    if (G[5] * 222 !== 666) {
+      log("Condition failed. Mint blocked.");
+      return;
+    }
+
+    const manifestMessage =
+      `${G[3]} let ${Account.join(", ")} Mint ${Name.join(", ")} ` +
+      `${mintAmountText} ${symbol} to ${walletPublicKey.toBase58()} ` +
+      `&& meme coins coming out bout what is in the console log`;
+
+    log("MAINNET METADATA MANIFEST:", manifestMessage);
+
+    log(
+      u[2],
+      u[0],
+      u[1],
+      u[2],
+      G[0],
+      e[4],
+      G[1],
+      G[2],
+      G[1],
+      e[4],
+      Account.join(", "),
+      Name.join(", ")
+    );
+const mintKeypair = Keypair.generate();
+    const mintPublicKey = mintKeypair.publicKey;
+    const metadataPda = deriveMetadataPda(mintPublicKey);
+
+    log("Creating MAINNET SPL mint:", mintPublicKey.toBase58());
+    log("Derived metadata PDA:", metadataPda.toBase58());
+
+    const rentLamports = await getMinimumBalanceForRentExemptMint(connection);
+
+    const createMintInstruction = SystemProgram.createAccount({
+      fromPubkey: walletPublicKey,
+      newAccountPubkey: mintPublicKey,
+      space: MINT_SIZE,
+      lamports: rentLamports,
+      programId: TOKEN_PROGRAM_ID
+    });
+
+    const initializeMintInstruction = createInitializeMintInstruction(
+      mintPublicKey,
+      decimals,
+      walletPublicKey,
+      walletPublicKey,
+      TOKEN_PROGRAM_ID
+    );
+
+    const createMetadataInstruction = createCreateMetadataAccountV3Instruction(
+      {
+        metadata: metadataPda,
+        mint: mintPublicKey,
+        mintAuthority: walletPublicKey,
+        payer: walletPublicKey,
+        updateAuthority: walletPublicKey
+      },
+      {
+        createMetadataAccountArgsV3: {
+          data: {
+            name: tokenName,
+            symbol,
+            uri: metadataUri,
+            sellerFeeBasisPoints: 0,
+            creators: null,
+            collection: null,
+            uses: null
+          },
+          isMutable: true,
+          collectionDetails: null
+        }
+      }
+    );
+
+    const createMintAndMetadataTransaction = new Transaction().add(
+      createMintInstruction,
+      initializeMintInstruction,
+      createMetadataInstruction
+    );
+
+    const createMetadataSignature = await signAndSendTransaction(
+      createMintAndMetadataTransaction,
+      [mintKeypair]
+    );
+
+    log("Mainnet mint and metadata account created.");
+    log("Create mint/metadata tx:", getExplorerUrl(createMetadataSignature, "tx"));
+
+    const associatedTokenAccount = await getAssociatedTokenAddress(
+      mintPublicKey,
+      walletPublicKey,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    );
+
+    log("Associated Token Account:", associatedTokenAccount.toBase58());
+
+    const mintToTransaction = new Transaction().add(
+      createAssociatedTokenAccountIdempotentInstruction(
+        walletPublicKey,
+        associatedTokenAccount,
+        walletPublicKey,
+        mintPublicKey,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      ),
+      createMintToInstruction(
+        mintPublicKey,
+        associatedTokenAccount,
+        walletPublicKey,
+        mintAmountBaseUnits,
+        [],
+        TOKEN_PROGRAM_ID
+      )
+    );
+
+    const mintToSignature = await signAndSendTransaction(mintToTransaction);
+
+    mintAddressEl.textContent = mintPublicKey.toBase58();
+    metadataAddressEl.textContent = metadataPda.toBase58();
+    tokenAccountEl.textContent = associatedTokenAccount.toBase58();
+    metadataSignatureEl.textContent = createMetadataSignature;
+    lastSignatureEl.textContent = mintToSignature;
+
+    log(`Minted ${mintAmountText} ${symbol} on Solana mainnet.`);
+    log("Token name:", tokenName);
+    log("Token symbol:", symbol);
+    log("Metadata URI:", metadataUri);
+    log("Mint address:", mintPublicKey.toBase58());
+    log("Metadata PDA:", metadataPda.toBase58());
+    log("Token account:", associatedTokenAccount.toBase58());
+    log("MintTo tx:", getExplorerUrl(mintToSignature, "tx"));
+    log("Mint explorer:", getExplorerUrl(mintPublicKey.toBase58(), "address"));
+    log("Metadata explorer:", getExplorerUrl(metadataPda.toBase58(), "address"));
+
+    await refreshBalance();
+  }
+
+  function attachEvents() {
+    buildMetadataBtn.addEventListener("click", buildMetadataHelper);
+    copyMetadataBtn.addEventListener("click", copyMetadataJson);
+
+    connectBtn.addEventListener("click", async () => {
+      try {
+        await connectPhantom();
+      } catch (error) {
+        log("Connect error:", error.message || error);
+      }
+    });
+
+    mintBtn.addEventListener("click", async () => {
+      try {
+        mintBtn.disabled = true;
+        await createMintMetadataAndMintDome();
+      } catch (error) {
+        log("Mint/metadata error:", error.message || error);
+      } finally {
+        if (walletPublicKey) {
+          mintBtn.disabled = false;
+        }
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      logArea.textContent = "";
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    initDomRefs();
+    attachEvents();
+    buildMetadataHelper();
+
+    log("Ready on Solana mainnet-beta.");
+    log("Step 1: Build metadata JSON and upload dome.json + dome.png to GitHub Pages.");
+    log("Step 2: Confirm the Metadata URI opens raw JSON in the browser.");
+    log("Step 3: Connect Phantom and mint.");
+    log("Desktop: use Chrome/Brave/Edge with Phantom extension.");
+    log("Mobile: open this Blogspot page inside Phantom browser.");
+    log("Warning: this creates a real mainnet SPL mint, a real metadata account, and spends real SOL.");
+  });
+</script>
+</html>

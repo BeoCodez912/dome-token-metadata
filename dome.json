@@ -1,0 +1,11 @@
+{
+  "name": "DOME Manifest Token",
+  "symbol": "DOME",
+  "description": "DOME Solana mainnet token minted from the console manifest.",
+  "image": "https://YOUR_GITHUB_USERNAME.github.io/dome-token-metadata/dome.png",
+  "extensions": {
+    "website": "https://YOUR_BLOG.blogspot.com",
+    "twitter": "",
+    "telegram": ""
+  }
+}
